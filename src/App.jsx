@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
+import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom'
 import Note from './components/Note'
 import noteservice from './services/notes'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import Footer from './components/Footer'
 import LoginForm from './components/LoginForm'
+import RegisterForm from './components/RegisterForm'
 import NoteForm from './components/NoteForm'
 import Togglable from './components/Togglable'
+import { useLocalStorage } from './utils/useLocalStorage'
 
 const App = () => {
   const [notes, setNotes] = useState([])
@@ -14,7 +17,7 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null) //guarda un objeto que tiene el token, username y name
+  const [user, setUser] = useLocalStorage('user', null) //guarda un objeto que tiene el token, username y name
 
   const noteFormRef = useRef()
 
@@ -115,6 +118,14 @@ const App = () => {
     </Togglable>
   )
 
+  const registerForm = () => (
+    <Togglable buttonLabel='register'>
+      <RegisterForm
+        setUser={setUser}
+      />
+    </Togglable>
+  )
+
   const logOutButton = () => (
     <>
       <button onClick={handleLogOut}>
@@ -133,17 +144,19 @@ const App = () => {
     <div>
       <h1>Notes</h1>
       <Notification message={errorMessage} />
-
       {/* se utiliza para representar los formularios de manera condicional */}
-      {user === null ?
-        loginForm()
-        :
+      {user === null ? (
+        <>
+          {loginForm()}
+          {registerForm()}
+        </>
+      ):(
         <div>
           <p>{user.name} logged-in</p> {/*si el usuario esta loggeado muestra su nombre en la pantalla que ya viene en el estado user*/}
           {logOutButton()}
           {noteForm()} {/*muestra el formulario para ingresar notas */}
         </div>
-      }
+      )}
 
       <div>
         <button onClick={() => setShowAll(!showAll)}>
