@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom'
 import Note from './components/Note'
 import noteservice from './services/notes'
 import loginService from './services/login'
